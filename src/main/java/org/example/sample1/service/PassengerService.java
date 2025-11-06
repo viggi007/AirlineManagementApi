@@ -1,6 +1,6 @@
 package org.example.sample1.service;
 
-import org.example.sample1.Repository.PassengerRepository;
+import org.example.sample1.repository.PassengerRepository;
 import org.example.sample1.model.Passenger;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package org.example.sample1.Repository;
+package org.example.sample1.repository;
 
 
 import org.example.sample1.model.Flight;

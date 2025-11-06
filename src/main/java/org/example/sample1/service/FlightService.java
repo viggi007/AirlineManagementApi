@@ -1,5 +1,5 @@
 package org.example.sample1.service;
-import org.example.sample1.Repository.FlightRepository;
+import org.example.sample1.repository.FlightRepository;
 import org.example.sample1.model.Flight;
 import org.springframework.stereotype.Service;
 
