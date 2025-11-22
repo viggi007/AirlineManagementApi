@@ -6,7 +6,6 @@ public class BookingResponse {
     private Long passengerId;
     private String seatNumber;
 
-    // getters / setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     public Long getFlightId() { return flightId; }
