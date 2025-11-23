@@ -2,6 +2,7 @@ package org.example.sample1.controller;
 
 import org.example.sample1.dto.BookingRequest;
 import org.example.sample1.dto.BookingResponse;
+import org.example.sample1.mapper.BookingMapper;
 import org.example.sample1.model.Booking;
 import org.example.sample1.service.BookingService;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/bookings")
@@ -26,31 +26,40 @@ public class BookingController {
 
     @GetMapping
     public ResponseEntity<List<BookingResponse>> getAll() {
-        List<BookingResponse> list = service.findAll().stream().map(this::toResponse).collect(Collectors.toList());
-        return ResponseEntity.ok(list);
+        return ResponseEntity.ok(service
+                .findAll()
+                .stream()
+                .map(BookingMapper::toResponse)
+                .toList()
+        );
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<BookingResponse> getById(@PathVariable Long id) {
-        Booking b = service.findById(id);
-        return ResponseEntity.ok(toResponse(b));
+        return ResponseEntity.ok(
+                BookingMapper.toResponse(service.findById(id))
+        );
     }
 
     @PostMapping
-    public ResponseEntity<BookingResponse> create(@Valid @RequestBody BookingRequest request) {
-        Booking created = service.createBooking(request.getFlightId(), request.getPassengerId(), request.getSeatNumber());
-        BookingResponse resp = toResponse(created);
-        return ResponseEntity.created(URI.create("/api/bookings/" + created.getId())).body(resp);
+    public ResponseEntity<BookingResponse> create(
+            @Valid @RequestBody BookingRequest request) {
+        Booking created = service.createBooking(
+                request.flightId(),
+                request.passengerId(),
+                request.seatNumber()
+        );
+        return ResponseEntity.created(
+                URI.create("/api/bookings/" + created.getId())
+        ).body(BookingMapper.toResponse(created));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BookingResponse> update(@PathVariable Long id, @Valid @RequestBody BookingRequest request) {
-        Booking booking = service.findById(id);
-        // update relations
-        booking.setSeatNumber(request.getSeatNumber());
-        // if you want to update flight/passenger, fetch them as service does or call service methods
-        Booking saved = service.save(booking);
-        return ResponseEntity.ok(toResponse(saved));
+    public ResponseEntity<BookingResponse> update(
+            @PathVariable Long id,
+            @Valid @RequestBody BookingRequest request) {
+        Booking updated = service.updateBooking(id, request);
+        return ResponseEntity.ok(BookingMapper.toResponse(updated));
     }
 
     @DeleteMapping("/{id}")
@@ -59,12 +68,4 @@ public class BookingController {
         return ResponseEntity.noContent().build();
     }
 
-    private BookingResponse toResponse(Booking b) {
-        BookingResponse r = new BookingResponse();
-        r.setId(b.getId());
-        r.setFlightId(b.getFlight() != null ? b.getFlight().getId() : null);
-        r.setPassengerId(b.getPassenger() != null ? b.getPassenger().getId() : null);
-        r.setSeatNumber(b.getSeatNumber());
-        return r;
-    }
 }
