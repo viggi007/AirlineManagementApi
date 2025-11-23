@@ -50,7 +50,6 @@ public class BookingService {
     public Booking updateBooking(Long id, BookingRequest request) {
         Booking booking = findById(id);
         booking.setSeatNumber(request.seatNumber());
-
         return save(booking);
     }
 
